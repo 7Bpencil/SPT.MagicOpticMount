@@ -5,6 +5,7 @@
 // LICENSE file in the root directory of this source tree.
 //
 
+using System.Reflection;
 using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Reflection.Patching;
@@ -15,18 +16,23 @@ using SPTarkov.Server.Core.Models.Spt.Tables;
 
 namespace SevenBoldPencil.ModularSights;
 
-[Injectable(TypePriority = OnLoadOrder.Preload + 90000)]
+[Injectable(TypePriority = OnLoadOrder.Preload + 2)]
 public class Plugin(
+    WTTServerCommonLib.WTTServerCommonLib wttCommon,
     ISptLogger<Plugin> logger
 ) : IOnLoad
 {
     public static Plugin Instance;
     public ISptLogger<Plugin> Logger = logger;
 
-    public Task OnLoadAsync(CancellationToken cancellationToken)
+    public async Task OnLoadAsync(CancellationToken cancellationToken)
     {
         Instance = this;
 
-        return Task.CompletedTask;
+        var assembly = Assembly.GetExecutingAssembly();
+
+        await wttCommon.CustomItemServiceExtended.CreateCustomItems(assembly);
+
+        await Task.CompletedTask;
     }
 }

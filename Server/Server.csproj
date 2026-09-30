@@ -11,6 +11,7 @@
     <AssemblySearchPaths>
       $(AssemblySearchPaths);
       $(SPTPath)\SPT_Runtime;
+      $(SPTPath)\SPT_Runtime\user\mods\WTT-ServerCommonLib;
     </AssemblySearchPaths>
     <OutputType>Library</OutputType>
   </PropertyGroup>
@@ -25,6 +26,7 @@
     <Reference Include="SemanticVersioning" />
     <Reference Include="Spectre.Console" />
     <Reference Include="Spectre.Console.Ansi" />
+    <Reference Include="WTT-ServerCommonLib" />
   </ItemGroup>
 
 </Project>
