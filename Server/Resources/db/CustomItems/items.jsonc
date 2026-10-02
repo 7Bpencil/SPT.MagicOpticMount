@@ -74,9 +74,9 @@
     },
     "locales": {
       "en": {
-        "name": "Magic Mount",
-        "shortName": "MMount",
-        "description": "Magic Mount"
+        "name": "Magic Reflex Mount",
+        "shortName": "MRM",
+        "description": "Allows mounting reflex sight with magnifier and clip-on thermal"
       }
     },
     "addtoModSlots": true,
@@ -147,9 +147,9 @@
     },
     "locales": {
       "en": {
-        "name": "Magic Mount Optic",
-        "shortName": "MMount Opt",
-        "description": "Magic Mount Optic"
+        "name": "Magic Optic Mount",
+        "shortName": "MOM",
+        "description": "Allows mounting optic sight with clip-on thermal"
       }
     },
     "addtoModSlots": true,
