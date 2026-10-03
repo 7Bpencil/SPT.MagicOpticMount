@@ -52,142 +52,7 @@ public class Plugin : BaseUnityPlugin
     private void Awake()
 	{
 		Instance = this;
-		new Patch_PWA_OnAimOrPoseChanged().Enable();
-		new Patch_FirearmController_ChangeAimingMode().Enable();
-		new Patch_ProceduralWeaponAnimation_method_11().Enable();
-		new Patch_OpticCameraManager_OnOpticSightEnabled().Enable();
 		new Patch_OpticComponentUpdater_CopyComponentFromOptic().Enable();
-	}
-
-	public void OnAimingEnabled(Player player, Firearms firearms)
-	{
-#if DEBUG
-        // infinite stamina for testing
-        player.Physical.Stamina.Multiplier = 0;
-        player.Physical.HandsStamina.Multiplier = 0;
-#endif
-		// firearms._sightModVisualControllers // array of all sights
-		// TODO noticed that even though some sights are in this array, they cannot be selected
-		// (like folded iron sights) so do the same with thermal? do not let user select it
-		// pwa._optics
-		// Firearms.ProceduralWeaponAnimation.ScopeAimTransforms
-
-	}
-
-	public void OnAimingDisabled()
-	{
-
-	}
-}
-
-public class Patch_PWA_OnAimOrPoseChanged : ModulePatch
-{
-    protected override MethodBase GetTargetMethod()
-    {
-        return AccessTools.Method(typeof(ProceduralWeaponAnimation), nameof(ProceduralWeaponAnimation.OnAimOrPoseChanged));
-    }
-
-    [PatchPostfix]
-    public static void Postfix(ProceduralWeaponAnimation __instance, bool forced = false)
-	{
-		if (!__instance)
-		{
-			return;
-		}
-
-		var __instance__ = new ProceduralWeaponAnimation_Proxy(__instance);
-		var firearmController = __instance__._firearmController;
-		if (!firearmController)
-		{
-			return;
-		}
-
-		var player = firearmController._player;
-		if (!player)
-		{
-			return;
-		}
-
-		if (!player.IsYourPlayer)
-		{
-			return;
-		}
-
-		if (!__instance__._isAiming)
-		{
-			Plugin.Instance.OnAimingDisabled();
-			return;
-		}
-
-		var firearms = firearmController.Firearms;
-		Plugin.Instance.OnAimingEnabled(player, firearms);
-	}
-}
-
-public class Patch_FirearmController_ChangeAimingMode : ModulePatch
-{
-    protected override MethodBase GetTargetMethod()
-    {
-        return AccessTools.Method(typeof(FirearmController), nameof(FirearmController.ChangeAimingMode));
-    }
-
-    [PatchPostfix]
-    public static void Postfix()
-	{
-		Logger.LogWarning($"Patch_FirearmController_ChangeAimingMode");
-	}
-}
-
-// this one gets called right after pwa caches all scopes,
-// so its a good place to modify that scopes array, I think
-public class Patch_ProceduralWeaponAnimation_method_11 : ModulePatch
-{
-    protected override MethodBase GetTargetMethod()
-    {
-        return AccessTools.Method(typeof(ProceduralWeaponAnimation), nameof(ProceduralWeaponAnimation.method_11));
-    }
-
-    [PatchPrefix]
-    public static void Prefix(ProceduralWeaponAnimation __instance)
-	{
-		// TODO should we filter non player pwas? probably
-
-		Logger.LogWarning($"Patch_ProceduralWeaponAnimation_method_11");
-
-		// if we have thermal directly in front of optic, do our things.
-		// its probably overkill, but there can be multiple pairs of optic-thermal
-
-		// TODO goal: can still switch between thermal and optic to change optic zoom/thermal zoom or color
-		// but it should still show optic sight
-
-
-		// TODO remove allocations
-
-		// var thermals = new List<ProceduralWeaponAnimation.SightNBone>();
-		// var nonThermalOptics = new List<ProceduralWeaponAnimation.SightNBone>();
-
-		// foreach (var sight in __instance.ScopeAimTransforms)
-		// {
-		// 	if (!sight.IsOptic)
-		// 	{
-		// 		continue;
-		// 	}
-
-		// }
-	}
-}
-
-public class Patch_OpticCameraManager_OnOpticSightEnabled : ModulePatch
-{
-    protected override MethodBase GetTargetMethod()
-    {
-        return AccessTools.Method(typeof(OpticCameraManager), nameof(OpticCameraManager.OnOpticSightEnabled));
-    }
-
-    [PatchPrefix]
-    public static void Prefix(OpticSight opticSight)
-	{
-		Logger.LogWarning($"Patch_OpticCameraManager_OnOpticSightEnabled");
 	}
 }
 
@@ -203,8 +68,6 @@ public class Patch_OpticComponentUpdater_CopyComponentFromOptic : ModulePatch
 	{
 		var thermalVision = ___thermalVision;
 
-		Logger.LogWarning($"Patch_OpticComponentUpdater_CopyComponentFromOptic");
-
         if (!Singleton<GameWorld>.Instantiated)
         {
             return;
@@ -219,8 +82,6 @@ public class Patch_OpticComponentUpdater_CopyComponentFromOptic : ModulePatch
 		{
 			return;
 		}
-
-		Logger.LogWarning($"Found main player");
 
 		var pwa = player.ProceduralWeaponAnimation;
 		var _pwa = new ProceduralWeaponAnimation_Proxy(pwa);
