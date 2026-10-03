@@ -8,7 +8,7 @@
         "path": "7b_magic_mount_optic.bundle",
         "rcid": ""
       },
-      "Width": 3,
+      "Width": 1,
       "Height": 1,
       "Weight": 0,
       "Slots": [
@@ -83,16 +83,34 @@
       "en": {
         "name": "Magic Optic Mount",
         "shortName": "MOM",
-        "description": "Allows mounting optic sight along with clip-on thermal or night vision"
+        "description": "Invisble and weightless mount with enough space for optic sight together with thermal or night vision device"
       }
     },
     "addtoModSlots": true,
     "modSlot": [
       "mod_scope"
     ],
-    "fleaPriceRoubles": 18890,
-    "handbookPriceRoubles": 13440,
+    "fleaPriceRoubles": 1,
+    "handbookPriceRoubles": 1,
     "inheritParentData": true,
-    "inheritExtensionData": true
+    "inheritExtensionData": true,
+    "addtoTraders": true,
+    "traders": {
+      "MECHANIC": {
+        "6abdaebc1dc9920e7e5566f5": {
+          "barterSettings": {
+            "loyalLevel": 1,
+            "unlimitedCount": true,
+            "stackObjectsCount": 777
+          },
+          "barters": [
+            {
+              "count": 1,
+              "_tpl": "MONEY_ROUBLES"
+            }
+          ]
+        }
+      }
+    }
   }
 }
