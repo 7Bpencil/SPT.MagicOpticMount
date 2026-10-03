@@ -41,6 +41,7 @@ using JsonType;
 using GPUInstancer;
 using Koenigz.PerfectCulling.EFT;
 using FirearmController = EFT.Player.FirearmController;
+using NightVision = BSG.CameraEffects.NightVision;
 
 namespace SevenBoldPencil.ModularSights;
 
@@ -64,10 +65,8 @@ public class Patch_OpticComponentUpdater_CopyComponentFromOptic : ModulePatch
     }
 
     [PatchPostfix]
-    public static void Postfix(OpticSight opticSight, ThermalVision ___thermalVision, ref Transform ___cameraPivot)
+    public static void Postfix(OpticSight opticSight, ThermalVision ___thermalVision, NightVision ___nightVision, ref Transform ___cameraPivot)
 	{
-		var thermalVision = ___thermalVision;
-
         if (!Singleton<GameWorld>.Instantiated)
         {
             return;
@@ -84,17 +83,6 @@ public class Patch_OpticComponentUpdater_CopyComponentFromOptic : ModulePatch
 		}
 
 		var pwa = player.ProceduralWeaponAnimation;
-		var _pwa = new ProceduralWeaponAnimation_Proxy(pwa);
-		var firearmController = _pwa._firearmController;
-		if (!firearmController)
-		{
-			return;
-		}
-
-		var firearms = firearmController.Firearms;
-
-		// TODO no need to go around PWA to search for current scope and shit,
-		// its right there in method parameters, also opticBone is just ___cameraPivot
 
 		Transform opticBone;
 		{
@@ -105,19 +93,29 @@ public class Patch_OpticComponentUpdater_CopyComponentFromOptic : ModulePatch
 			}
 
 			var scope = pwa.CurrentScope.ScopePrefabCache;
-			var currentModeIndex = scope.CurrentModeId;
-			var scopeModes = scope._scopeModeInfos;
-			var mode = scopeModes[currentModeIndex];
+			if (!scope)
+			{
+				return;
+			}
 
-			var thermalData = mode.OpticSight.ScopeData.ThermalVisionData;
-			if (thermalData)
+			var mode = scope._scopeModeInfos[scope.CurrentModeId];
+			if (mode.OpticSight != opticSight)
+			{
+				// not us? no way
+				return;
+			}
+
+			var scopeData = mode.OpticSight.ScopeData;
+
+			var thermalData = scopeData.ThermalVisionData;
+			if (thermalData && thermalData.ThermalVision)
 			{
 				// no need to adjust thermals
 				return;
 			}
 
-			var nightVisionData = mode.OpticSight.ScopeData.NightVisionData;
-			if (nightVisionData)
+			var nightVisionData = scopeData.NightVisionData;
+			if (nightVisionData && nightVisionData.NightVision)
 			{
 				// no need to adjust nv
 				return;
@@ -126,8 +124,16 @@ public class Patch_OpticComponentUpdater_CopyComponentFromOptic : ModulePatch
 			opticBone = pwa.CurrentScope.Bone;
 		}
 
-		// check if there is a thermal scope in front
+		// check if there is a thermal scope or night vision in front
 
+		var _pwa = new ProceduralWeaponAnimation_Proxy(pwa);
+		var firearmController = _pwa._firearmController;
+		if (!firearmController)
+		{
+			return;
+		}
+
+		var firearms = firearmController.Firearms;
 		var weaponRoot = firearms.WeaponPrefab.Hierarchy.GetTransform(ECharacterWeaponBones.weapon);
 		var weaponForward = -weaponRoot.up;
 
@@ -139,48 +145,65 @@ public class Patch_OpticComponentUpdater_CopyComponentFromOptic : ModulePatch
 			}
 
 			var scope = scopeAimTransform.ScopePrefabCache;
-			var currentModeIndex = scope.CurrentModeId;
-			var scopeModes = scope._scopeModeInfos;
-			var mode = scopeModes[currentModeIndex];
-
-			var thermalVisionData = mode.OpticSight.ScopeData.ThermalVisionData;
-			if (!thermalVisionData)
+			if (!scope)
 			{
-				continue;
-			}
-			if (!thermalVisionData.ThermalVision)
-			{
-				continue;
+				return;
 			}
 
-			var thermalBone = scopeAimTransform.Bone;
-			var angle = Vector3.Angle(thermalBone.position - opticBone.position, weaponForward);
-			if (Vector3.Angle(thermalBone.position - opticBone.position, weaponForward) < 0.5f)
+			var scopeData = scope._scopeModeInfos[scope.CurrentModeId].OpticSight.ScopeData;
+
+   			var thermalVisionData = scopeData.ThermalVisionData;
+			if (thermalVisionData && thermalVisionData.ThermalVision && AreSightsAligned(opticBone, scopeAimTransform.Bone, weaponForward))
 			{
-				// copypaste from original method
+				___cameraPivot = scopeData.transform;
+				CopyThermalData(___thermalVision, thermalVisionData);
+				break;
+			}
 
-				// TODO switching camera pivot probably wont work for magnifier-reflex-thermal combo
-				___cameraPivot = mode.OpticSight.ScopeData.transform;
-
-				thermalVision.enabled = true;
-				thermalVision.On = thermalVisionData.ThermalVision;
-				thermalVision.IsGlitch = thermalVisionData.ThermalVisionIsGlitch;
-				thermalVision.IsPixelated = thermalVisionData.ThermalVisionIsPixelated;
-				thermalVision.IsNoisy = thermalVisionData.ThermalVisionIsNoisy;
-				thermalVision.IsMotionBlurred = thermalVisionData.ThermalVisionIsMotionBlurred;
-				thermalVision.IsFpsStuck = thermalVisionData.ThermalVisionIsFpsStuck;
-				thermalVision.ThermalVisionUtilities = thermalVisionData.ThermalVisionUtilities;
-				thermalVision.StuckFpsUtilities = thermalVisionData.StuckFPSUtilities;
-				thermalVision.MotionBlurUtilities = thermalVisionData.MotionBlurUtilities;
-				thermalVision.GlitchUtilities = thermalVisionData.GlitchUtilities;
-				thermalVision.PixelationUtilities = thermalVisionData.PixelationUtilities;
-				thermalVision.ChromaticAberrationThermalShift = thermalVisionData.ChromaticAberrationThermalShift;
-				thermalVision.UnsharpBias = thermalVisionData.UnsharpBias;
-				thermalVision.UnsharpRadiusBlur = thermalVisionData.UnsharpRadiusBlur;
-
+			var nightVisionData = scopeData.NightVisionData;
+			if (nightVisionData && nightVisionData.NightVision && AreSightsAligned(opticBone, scopeAimTransform.Bone, weaponForward))
+			{
+				___cameraPivot = scopeData.transform;
+				CopyNightVisionData(___nightVision, nightVisionData);
 				break;
 			}
 		}
+	}
+
+	public static bool AreSightsAligned(Transform opticBone, Transform specialOpticBone, Vector3 weaponForward)
+	{
+		var angle = Vector3.Angle(specialOpticBone.position - opticBone.position, weaponForward);
+		return angle < 1;
+	}
+
+	public static void CopyThermalData(ThermalVision thermalVision, ScopeThermalVisionData thermalVisionData)
+	{
+		thermalVision.enabled = true;
+		thermalVision.On = thermalVisionData.ThermalVision;
+		thermalVision.IsGlitch = thermalVisionData.ThermalVisionIsGlitch;
+		thermalVision.IsPixelated = thermalVisionData.ThermalVisionIsPixelated;
+		thermalVision.IsNoisy = thermalVisionData.ThermalVisionIsNoisy;
+		thermalVision.IsMotionBlurred = thermalVisionData.ThermalVisionIsMotionBlurred;
+		thermalVision.IsFpsStuck = thermalVisionData.ThermalVisionIsFpsStuck;
+		thermalVision.ThermalVisionUtilities = thermalVisionData.ThermalVisionUtilities;
+		thermalVision.StuckFpsUtilities = thermalVisionData.StuckFPSUtilities;
+		thermalVision.MotionBlurUtilities = thermalVisionData.MotionBlurUtilities;
+		thermalVision.GlitchUtilities = thermalVisionData.GlitchUtilities;
+		thermalVision.PixelationUtilities = thermalVisionData.PixelationUtilities;
+		thermalVision.ChromaticAberrationThermalShift = thermalVisionData.ChromaticAberrationThermalShift;
+		thermalVision.UnsharpBias = thermalVisionData.UnsharpBias;
+		thermalVision.UnsharpRadiusBlur = thermalVisionData.UnsharpRadiusBlur;
+	}
+
+	public static void CopyNightVisionData(NightVision nightVision, ScopeNightVisionData nightVisionData)
+	{
+		nightVision.enabled = true;
+		nightVision.On = nightVisionData.NightVision;
+		nightVision.Intensity = nightVisionData.Intensity;
+		nightVision.MaskSize = nightVisionData.MaskSize;
+		nightVision.NoiseIntensity = nightVisionData.NoiseIntensity;
+		nightVision.NoiseScale = nightVisionData.NoiseScale;
+		nightVision.Color = nightVisionData.Color;
 	}
 }
 
@@ -189,8 +212,6 @@ public struct ProceduralWeaponAnimation_Proxy(ProceduralWeaponAnimation instance
     private readonly ProceduralWeaponAnimation __instance = instance;
 
     private static TypedFieldInfo<ProceduralWeaponAnimation, FirearmController> __firearmController = new("_firearmController");
-    private static TypedFieldInfo<ProceduralWeaponAnimation, bool> __isAiming = new("_isAiming");
 
     public FirearmController _firearmController { get { return __firearmController.Get(__instance); } set { __firearmController.Set(__instance, value); } }
-    public bool _isAiming { get { return __isAiming.Get(__instance); } set { __isAiming.Set(__instance, value); } }
 }
