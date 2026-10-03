@@ -17,22 +17,12 @@ using SPTarkov.Server.Core.Models.Spt.Tables;
 namespace SevenBoldPencil.ModularSights;
 
 [Injectable(TypePriority = OnLoadOrder.Preload + 2)]
-public class Plugin(
-    WTTServerCommonLib.WTTServerCommonLib wttCommon,
-    ISptLogger<Plugin> logger
-) : IOnLoad
+public class Plugin(WTTServerCommonLib.WTTServerCommonLib wttCommon) : IOnLoad
 {
-    public static Plugin Instance;
-    public ISptLogger<Plugin> Logger = logger;
-
     public async Task OnLoadAsync(CancellationToken cancellationToken)
     {
-        Instance = this;
-
         var assembly = Assembly.GetExecutingAssembly();
-
         await wttCommon.CustomItemServiceExtended.CreateCustomItems(assembly);
-
         await Task.CompletedTask;
     }
 }
