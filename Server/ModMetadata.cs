@@ -7,6 +7,7 @@
 
 using SPTarkov.Server.Core.Models.Spt.Mod;
 using Range = SemanticVersioning.Range;
+using Version = SemanticVersioning.Version;
 
 namespace SevenBoldPencil.ModularSights;
 
@@ -16,8 +17,8 @@ public record ModMetadata : IModMetadata
     public string Name { get; init; } = "7Bpencil.ModularSights";
     public string Author { get; init; } = "7Bpencil";
     public List<string>? Contributors { get; init; } = null;
-    public SemanticVersioning.Version Version { get; init; } = new("0.0.1");
-    public SemanticVersioning.Range SptVersion { get; init; } = new("~4.1.6");
+    public Version Version { get; init; } = new("0.0.1");
+    public Range SptVersion { get; init; } = new("~4.1.6");
     public List<string>? Incompatibilities { get; init; } = null;
     public Dictionary<string, Range>? ModDependencies { get; init; } = new()
     {
