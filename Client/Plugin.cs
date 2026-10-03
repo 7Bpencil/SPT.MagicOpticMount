@@ -6,53 +6,29 @@
 //
 
 using BepInEx;
-using BepInEx.Configuration;
 using Comfort.Common;
-using Diz.Utils;
 using EFT;
 using EFT.CameraControl;
-using EFT.GameTriggers;
-using EFT.Impostors;
-using EFT.Interactive;
-using EFT.Settings.Graphics;
-using EFT.UI.Settings;
-using EFT;
 using EFT.Animations;
-using EFT.AssetsManager;
-using EFT.InventoryLogic;
-using EFT.Visual;
-using EFT.UI;
-using EFT.UI.WeaponModding;
-using EFT.Utilities;
-using Newtonsoft.Json;
 using HarmonyLib;
 using SevenBoldPencil.Common;
 using SPT.Reflection.Patching;
-using System;
-using System.IO;
 using System.Reflection;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using JsonType;
-using GPUInstancer;
-using Koenigz.PerfectCulling.EFT;
+using UnityStandardAssets.ImageEffects;
 using FirearmController = EFT.Player.FirearmController;
 using NightVision = BSG.CameraEffects.NightVision;
+
+// TODO add setting to multiply optic zoom by special optic zoom to keep it "realistic"
+// TODO add more precise detection of optics alignment
 
 namespace SevenBoldPencil.ModularSights;
 
 [BepInPlugin("7Bpencil.ModularSights", "7Bpencil.ModularSights", "0.0.1")]
 public class Plugin : BaseUnityPlugin
 {
-	public static Plugin Instance;
-
     private void Awake()
 	{
-		Instance = this;
 		new Patch_OpticComponentUpdater_CopyComponentFromOptic().Enable();
 	}
 }
@@ -65,8 +41,19 @@ public class Patch_OpticComponentUpdater_CopyComponentFromOptic : ModulePatch
     }
 
     [PatchPostfix]
-    public static void Postfix(OpticSight opticSight, ThermalVision ___thermalVision, NightVision ___nightVision, ref Transform ___cameraPivot)
-	{
+    public static void Postfix(
+		ref Transform ___cameraPivot,
+		Camera ___opticCamera,
+		ChromaticAberration ___chromaticAberration,
+		BloomOptimized ___bloomOptimized,
+	    ThermalVision ___thermalVision,
+		CC_FastVignette ___cc_FastVignette_0,
+		UltimateBloom ___ultimateBloom,
+		Fisheye ___fisheye,
+		Tonemapping ___tonemapping,
+		NightVision ___nightVision,
+		OpticSight opticSight
+	) {
         if (!Singleton<GameWorld>.Instantiated)
         {
             return;
@@ -83,6 +70,11 @@ public class Patch_OpticComponentUpdater_CopyComponentFromOptic : ModulePatch
 		}
 
 		var pwa = player.ProceduralWeaponAnimation;
+		if (pwa.ScopeAimTransforms.Count == 0)
+		{
+			// happens in hideout
+			return;
+		}
 
 		Transform opticBone;
 		{
@@ -110,21 +102,17 @@ public class Patch_OpticComponentUpdater_CopyComponentFromOptic : ModulePatch
 			var thermalData = scopeData.ThermalVisionData;
 			if (thermalData && thermalData.ThermalVision)
 			{
-				// no need to adjust thermals
 				return;
 			}
 
 			var nightVisionData = scopeData.NightVisionData;
 			if (nightVisionData && nightVisionData.NightVision)
 			{
-				// no need to adjust nv
 				return;
 			}
 
 			opticBone = pwa.CurrentScope.Bone;
 		}
-
-		// check if there is a thermal scope or night vision in front
 
 		var _pwa = new ProceduralWeaponAnimation_Proxy(pwa);
 		var firearmController = _pwa._firearmController;
@@ -150,22 +138,20 @@ public class Patch_OpticComponentUpdater_CopyComponentFromOptic : ModulePatch
 				return;
 			}
 
-			var scopeData = scope._scopeModeInfos[scope.CurrentModeId].OpticSight.ScopeData;
+			var mode = scope._scopeModeInfos[scope.CurrentModeId];
+			var scopeData = mode.OpticSight.ScopeData;
+			var cameraData = mode.OpticSight.CameraData;
 
    			var thermalVisionData = scopeData.ThermalVisionData;
-			if (thermalVisionData && thermalVisionData.ThermalVision && AreSightsAligned(opticBone, scopeAimTransform.Bone, weaponForward))
-			{
-				___cameraPivot = scopeData.transform;
-				CopyThermalData(___thermalVision, thermalVisionData);
-				break;
-			}
-
 			var nightVisionData = scopeData.NightVisionData;
-			if (nightVisionData && nightVisionData.NightVision && AreSightsAligned(opticBone, scopeAimTransform.Bone, weaponForward))
+
+			if (thermalVisionData && thermalVisionData.ThermalVision || nightVisionData && nightVisionData.NightVision)
 			{
-				___cameraPivot = scopeData.transform;
-				CopyNightVisionData(___nightVision, nightVisionData);
-				break;
+				if (AreSightsAligned(opticBone, scopeAimTransform.Bone, weaponForward))
+				{
+					CopySightData(ref ___cameraPivot, ___opticCamera, ___chromaticAberration, ___bloomOptimized, ___thermalVision, ___cc_FastVignette_0, ___ultimateBloom, ___fisheye, ___tonemapping, ___nightVision, scopeData, cameraData);
+					break;
+				}
 			}
 		}
 	}
@@ -176,34 +162,88 @@ public class Patch_OpticComponentUpdater_CopyComponentFromOptic : ModulePatch
 		return angle < 1;
 	}
 
-	public static void CopyThermalData(ThermalVision thermalVision, ScopeThermalVisionData thermalVisionData)
-	{
-		thermalVision.enabled = true;
-		thermalVision.On = thermalVisionData.ThermalVision;
-		thermalVision.IsGlitch = thermalVisionData.ThermalVisionIsGlitch;
-		thermalVision.IsPixelated = thermalVisionData.ThermalVisionIsPixelated;
-		thermalVision.IsNoisy = thermalVisionData.ThermalVisionIsNoisy;
-		thermalVision.IsMotionBlurred = thermalVisionData.ThermalVisionIsMotionBlurred;
-		thermalVision.IsFpsStuck = thermalVisionData.ThermalVisionIsFpsStuck;
-		thermalVision.ThermalVisionUtilities = thermalVisionData.ThermalVisionUtilities;
-		thermalVision.StuckFpsUtilities = thermalVisionData.StuckFPSUtilities;
-		thermalVision.MotionBlurUtilities = thermalVisionData.MotionBlurUtilities;
-		thermalVision.GlitchUtilities = thermalVisionData.GlitchUtilities;
-		thermalVision.PixelationUtilities = thermalVisionData.PixelationUtilities;
-		thermalVision.ChromaticAberrationThermalShift = thermalVisionData.ChromaticAberrationThermalShift;
-		thermalVision.UnsharpBias = thermalVisionData.UnsharpBias;
-		thermalVision.UnsharpRadiusBlur = thermalVisionData.UnsharpRadiusBlur;
-	}
+	// copypaste of OpticComponentUpdater.CopyComponentFromOptic
+	public static void CopySightData(
+		ref Transform cameraPivot,
+		Camera opticCamera,
+		ChromaticAberration chromaticAberration,
+		BloomOptimized bloomOptimized,
+	    ThermalVision thermalVision,
+		CC_FastVignette cc_FastVignette_0,
+		UltimateBloom ultimateBloom,
+		Fisheye fisheye,
+		Tonemapping tonemapping,
+		NightVision nightVision,
+		ScopeData scopeData,
+		IScopeCameraData cameraData
+	) {
+		cameraPivot = scopeData.transform;
 
-	public static void CopyNightVisionData(NightVision nightVision, ScopeNightVisionData nightVisionData)
-	{
-		nightVision.enabled = true;
-		nightVision.On = nightVisionData.NightVision;
-		nightVision.Intensity = nightVisionData.Intensity;
-		nightVision.MaskSize = nightVisionData.MaskSize;
-		nightVision.NoiseIntensity = nightVisionData.NoiseIntensity;
-		nightVision.NoiseScale = nightVisionData.NoiseScale;
-		nightVision.Color = nightVisionData.Color;
+		var postEffectsData = scopeData.PostEffectsData;
+
+		chromaticAberration.enabled = postEffectsData && postEffectsData.ChromaticAberration;
+		if (chromaticAberration.enabled)
+		{
+			chromaticAberration.Aniso = postEffectsData.ChromaticAberrationAniso;
+			chromaticAberration.Shift = postEffectsData.ChromaticAberrationShift;
+		}
+
+		bloomOptimized.enabled = postEffectsData && postEffectsData.BloomOptimized;
+		if (bloomOptimized.enabled)
+		{
+			bloomOptimized.intensity = postEffectsData.BloomOptimizedIntensity;
+			bloomOptimized.threshold = postEffectsData.BloomOptimizedThreshold;
+			bloomOptimized.blurSize = postEffectsData.BloomOptimizedBlurSize;
+		}
+
+		var thermalVisionData = scopeData.ThermalVisionData;
+		var hasThermal = thermalVisionData && thermalVisionData.ThermalVision;
+		opticCamera.farClipPlane = hasThermal ? cameraData.FarClipPlane : CameraManager.Instance.Camera.farClipPlane;
+		thermalVision.enabled = hasThermal;
+		if (thermalVision.enabled)
+		{
+			thermalVision.On = thermalVisionData.ThermalVision;
+			thermalVision.IsGlitch = thermalVisionData.ThermalVisionIsGlitch;
+			thermalVision.IsPixelated = thermalVisionData.ThermalVisionIsPixelated;
+			thermalVision.IsNoisy = thermalVisionData.ThermalVisionIsNoisy;
+			thermalVision.IsMotionBlurred = thermalVisionData.ThermalVisionIsMotionBlurred;
+			thermalVision.IsFpsStuck = thermalVisionData.ThermalVisionIsFpsStuck;
+			thermalVision.ThermalVisionUtilities = thermalVisionData.ThermalVisionUtilities;
+			thermalVision.StuckFpsUtilities = thermalVisionData.StuckFPSUtilities;
+			thermalVision.MotionBlurUtilities = thermalVisionData.MotionBlurUtilities;
+			thermalVision.GlitchUtilities = thermalVisionData.GlitchUtilities;
+			thermalVision.PixelationUtilities = thermalVisionData.PixelationUtilities;
+			thermalVision.ChromaticAberrationThermalShift = thermalVisionData.ChromaticAberrationThermalShift;
+			thermalVision.UnsharpBias = thermalVisionData.UnsharpBias;
+			thermalVision.UnsharpRadiusBlur = thermalVisionData.UnsharpRadiusBlur;
+		}
+
+		cc_FastVignette_0.enabled = postEffectsData && postEffectsData.FastVignette;
+		ultimateBloom.enabled = postEffectsData && postEffectsData.UltimateBloom;
+		fisheye.enabled = postEffectsData && postEffectsData.Fisheye;
+		tonemapping.enabled = postEffectsData && postEffectsData.Tonemapping;
+
+		if (tonemapping.enabled)
+		{
+			tonemapping.white = postEffectsData.White;
+			tonemapping.adaptionSpeed = postEffectsData.AdaptionSpeed;
+			tonemapping.exposureAdjustment = postEffectsData.ExposureAdjustment;
+			tonemapping.middleGrey = postEffectsData.MiddleGrey;
+			tonemapping.adaptiveTextureSize = postEffectsData.AdaptiveTextureSize;
+			tonemapping.type = postEffectsData.Type;
+		}
+
+		var nightVisionData = scopeData.NightVisionData;
+		nightVision.enabled = nightVisionData && nightVisionData.NightVision;
+		if (nightVision.enabled)
+		{
+			nightVision.On = nightVisionData.NightVision;
+			nightVision.Intensity = nightVisionData.Intensity;
+			nightVision.MaskSize = nightVisionData.MaskSize;
+			nightVision.NoiseIntensity = nightVisionData.NoiseIntensity;
+			nightVision.NoiseScale = nightVisionData.NoiseScale;
+			nightVision.Color = nightVisionData.Color;
+		}
 	}
 }
 
