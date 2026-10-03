@@ -5,8 +5,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>disable</Nullable>
-    <OutPath>$(SPTPath)\BepInEx\plugins\7Bpencil.ModularSights</OutPath>
-    <StagePath>..\Stage\BepInEx\plugins\7Bpencil.ModularSights</StagePath>
+    <OutPath>$(SPTPath)\BepInEx\plugins\7Bpencil.MagicOpticMount</OutPath>
+    <StagePath>..\Stage\BepInEx\plugins\7Bpencil.MagicOpticMount</StagePath>
     <AssemblySearchPaths>
       $(AssemblySearchPaths);
       $(SPTPath)\EscapeFromTarkov_Data\Managed;

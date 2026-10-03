@@ -22,9 +22,9 @@ using NightVision = BSG.CameraEffects.NightVision;
 // TODO add setting to multiply optic zoom by special optic zoom to keep it "realistic"
 // TODO add more precise detection of optics alignment
 
-namespace SevenBoldPencil.ModularSights;
+namespace SevenBoldPencil.MagicOpticMount;
 
-[BepInPlugin("7Bpencil.ModularSights", "7Bpencil.ModularSights", "0.0.1")]
+[BepInPlugin("7Bpencil.MagicOpticMount", "7Bpencil.MagicOpticMount", "0.0.1")]
 public class Plugin : BaseUnityPlugin
 {
     private void Awake()

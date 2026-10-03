@@ -9,7 +9,7 @@ using System.Reflection;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 
-namespace SevenBoldPencil.ModularSights;
+namespace SevenBoldPencil.MagicOpticMount;
 
 [Injectable(TypePriority = OnLoadOrder.Preload + 2)]
 public class Plugin(WTTServerCommonLib.WTTServerCommonLib wttCommon) : IOnLoad

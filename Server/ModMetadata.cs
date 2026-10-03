@@ -9,12 +9,12 @@ using SPTarkov.Server.Core.Models.Spt.Mod;
 using Range = SemanticVersioning.Range;
 using Version = SemanticVersioning.Version;
 
-namespace SevenBoldPencil.ModularSights;
+namespace SevenBoldPencil.MagicOpticMount;
 
 public record ModMetadata : IModMetadata
 {
-    public string ModGuid { get; init; } = "7Bpencil.ModularSights";
-    public string Name { get; init; } = "7Bpencil.ModularSights";
+    public string ModGuid { get; init; } = "7Bpencil.MagicOpticMount";
+    public string Name { get; init; } = "7Bpencil.MagicOpticMount";
     public string Author { get; init; } = "7Bpencil";
     public List<string>? Contributors { get; init; } = null;
     public Version Version { get; init; } = new("0.0.1");
