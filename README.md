@@ -1,9 +1,7 @@
-There's no loot, no bots, no quests, it's just an artpiece, don't take it seriously. There's no proper collision between some maps, use freecam to move around.
+Magic Optic Mount - Invisble and weightless mount with enough space for optic sight together with thermal or night vision device. Available at Mechanic 1. I know that its janky and unrealistic. Use scope rings of different height to align scope closer to thermal/night vision, and Tyfon.WeaponCustomizer to move thermal/night vision closer to scope objective lens, otherwise it wont work.
 
-![](Previews/0.png)
-![](Previews/1.png)
-![](Previews/2.png)
-![](Previews/3.png)
-![](Previews/4.png)
-![](Previews/5.png)
-![](Previews/6.png)
+![](Previews/echo-front.png)
+![](Previews/echo-back.png)
+![](Previews/thermal-razor.png)
+![](Previews/reap-ir.png)
+![](Previews/vulcan.png)
