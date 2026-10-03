@@ -8,9 +8,9 @@
         "path": "7b_magic_mount_optic.bundle",
         "rcid": ""
       },
-      "Width": 2,
+      "Width": 3,
       "Height": 1,
-      "Weight": 1.5,
+      "Weight": 0,
       "Slots": [
         {
           "_id": "6abd77a4e82efef3584fa480",
@@ -60,7 +60,7 @@
       "en": {
         "name": "Magic Optic Mount",
         "shortName": "MOM",
-        "description": "Allows mounting optic sight with clip-on thermal"
+        "description": "Allows mounting optic sight along with clip-on thermal or night vision"
       }
     },
     "addtoModSlots": true,
