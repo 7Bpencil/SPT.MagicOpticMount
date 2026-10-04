@@ -82,7 +82,9 @@
     },
     "addtoModSlots": true,
     "modSlot": [
-      "mod_scope"
+      "mod_scope",
+      "mod_scope_000",
+      "mod_scope_001"
     ],
     "fleaPriceRoubles": 1,
     "handbookPriceRoubles": 1,
