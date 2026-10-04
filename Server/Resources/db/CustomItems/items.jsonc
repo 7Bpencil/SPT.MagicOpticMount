@@ -1,8 +1,8 @@
 {
   "6abdaebc1dc9920e7e5566f5": {
     "itemTplToClone": "5c064c400db834001d23f468",
-    "parentId": "55818b224bdc2dde698b456f",
-    "handbookParentId": "5b5f755f86f77447ec5d770e",
+    "parentId": "MOUNT",
+    "handbookParentId": "MOD_MOUNT",
     "overrideProperties": {
       "Prefab": {
         "path": "7b_magic_mount_optic.bundle",
