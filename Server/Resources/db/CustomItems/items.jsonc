@@ -13,10 +13,7 @@
       "Weight": 0,
       "Slots": [
         {
-          "_id": "6abd77a4e82efef3584fa480",
-          "_mergeSlotWithChildren": false,
           "_name": "mod_scope_000",
-          "_parent": "6abdaebc1dc9920e7e5566f5",
           "_props": {
             "filters": [
               {
@@ -46,19 +43,13 @@
                   "686a959fea53389283823a5e",
                   "696395af1b7e04938307a124",
                   "5d0a29fed7ad1a002769ad08"
-                ],
-                "Shift": 0
+                ]
               }
             ]
-          },
-          "_proto": "55d30c4c4bdc2db4468b457e",
-          "_required": false
+          }
         },
         {
-          "_id": "6abd7b87e52bf51d3bff4353",
-          "_mergeSlotWithChildren": false,
           "_name": "mod_scope_001",
-          "_parent": "6abdaebc1dc9920e7e5566f5",
           "_props": {
             "filters": [
               {
@@ -69,13 +60,10 @@
                   "5b3b6dc75acfc47a8773fb1e",
                   "67641a851b2899700609901a",
                   "6478641c19d732620e045e17"
-                ],
-                "Shift": 0
+                ]
               }
             ]
-          },
-          "_proto": "55d30c4c4bdc2db4468b457e",
-          "_required": false
+          }
         }
       ]
     },
