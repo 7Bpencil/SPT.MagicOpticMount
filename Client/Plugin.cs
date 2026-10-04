@@ -10,6 +10,7 @@ using Comfort.Common;
 using EFT;
 using EFT.CameraControl;
 using EFT.Animations;
+using EFT.InventoryLogic;
 using HarmonyLib;
 using SevenBoldPencil.Common;
 using SPT.Reflection.Patching;
@@ -29,6 +30,7 @@ public class Plugin : BaseUnityPlugin
     private void Awake()
 	{
 		new Patch_OpticComponentUpdater_CopyComponentFromOptic().Enable();
+		new Patch_ScopeZoomHandler_UpdateScope().Enable();
 	}
 }
 
@@ -282,6 +284,23 @@ public class Patch_OpticComponentUpdater_CopyComponentFromOptic : ModulePatch
 			nightVision.NoiseScale = nightVisionData.NoiseScale;
 			nightVision.Color = nightVisionData.Color;
 		}
+	}
+}
+
+public class Patch_ScopeZoomHandler_UpdateScope : ModulePatch
+{
+    protected override MethodBase GetTargetMethod()
+    {
+        return AccessTools.Method(typeof(ScopeZoomHandler), nameof(ScopeZoomHandler.UpdateScope));
+    }
+
+    [PatchPrefix]
+    public static bool Prefix(IAdjustableOpticData ____adjustableOpticData)
+	{
+		// UpdateScope is a method relative to variable zoom scopes, but shit breaks
+		// and for some reason it gets called even when _adjustableOpticData is null,
+		// I guess game doesnt like when theres two optic scopes on the gun
+		return ____adjustableOpticData != null;
 	}
 }
 
