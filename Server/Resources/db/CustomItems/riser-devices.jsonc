@@ -1,0 +1,62 @@
+{
+  "6ac214cdc2a4056ddfefa167": {
+    "itemTplToClone": "5c064c400db834001d23f468",
+    "parentId": "MOUNT",
+    "handbookParentId": "MOD_MOUNT",
+    "overrideProperties": {
+      "Prefab": {
+        "path": "assets/content/items/mods/mounts/mount_all_larue_picatinny_raiser_qd_lt101.bundle",
+        "rcid": ""
+      },
+      "Slots": [
+        {
+          "_name": "mod_scope",
+          "_props": {
+            "filters": [
+              {
+                "Filter": [
+                  // same as Magic Optic Mount itself
+                  "5d1b5e94d7ad1a2b865a96b0", // FLIR RS-32 2.25-9x 35mm 60Hz thermal riflescope
+                  "5a1ead28fcdbcb001912fa9f", // UNV DLOC-IRD sight mount
+                  "63fc449f5bd61c6cf3784a88", // Armasight Zeus universal base
+                  "5b3b6dc75acfc47a8773fb1e", // Armasight Vulcan universal base
+                  "67641a851b2899700609901a", // Cyclone Shakhin mount
+                  "6478641c19d732620e045e17"  // SIG Sauer ECHO1 1-2x30mm 30Hz thermal reflex scope
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "locales": {
+      "en": {
+        "name": "Riser Devices",
+        "shortName": "Riser D",
+        "description": "Special riser for thermal and night vision devices on Magic Optic Mount"
+      }
+    },
+    "fleaPriceRoubles": 2900,
+    "handbookPriceRoubles": 2900,
+    "inheritParentData": true,
+    "inheritExtensionData": true,
+    "addtoTraders": true,
+    "traders": {
+      "MECHANIC": {
+        "6ac214cdc2a4056ddfefa167": {
+          "barterSettings": {
+            "loyalLevel": 1,
+            "unlimitedCount": true,
+            "stackObjectsCount": 777
+          },
+          "barters": [
+            {
+              "count": 2900,
+              "_tpl": "MONEY_ROUBLES"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

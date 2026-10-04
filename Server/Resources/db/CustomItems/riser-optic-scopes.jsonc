@@ -1,16 +1,13 @@
 {
-  "6abdaebc1dc9920e7e5566f5": {
+  "6ac1cce61ac3298178c7856d": {
     "itemTplToClone": "5c064c400db834001d23f468",
     "parentId": "MOUNT",
     "handbookParentId": "MOD_MOUNT",
     "overrideProperties": {
       "Prefab": {
-        "path": "7b_magic_mount_optic.bundle",
+        "path": "assets/content/items/mods/mounts/mount_all_larue_picatinny_raiser_qd_lt101.bundle",
         "rcid": ""
       },
-      "Width": 2,
-      "Height": 1,
-      "Weight": 0,
       "Slots": [
         {
           "_name": "mod_scope",
@@ -18,8 +15,7 @@
             "filters": [
               {
                 "Filter": [
-                  // custom riser
-                  "6ac1cce61ac3298178c7856d",
+                  // same as Magic Optic Mount itself
 
                   // assault scopes
                   "544a3a774bdc2d3a388b4567", // Leupold Mark 4 HAMR 4x24 DeltaPoint hybrid assault scope
@@ -56,48 +52,24 @@
               }
             ]
           }
-        },
-        {
-          "_name": "mod_scope_000",
-          "_props": {
-            "filters": [
-              {
-                "Filter": [
-                  "6ac214cdc2a4056ddfefa167", // custom riser
-                  "5d1b5e94d7ad1a2b865a96b0", // FLIR RS-32 2.25-9x 35mm 60Hz thermal riflescope
-                  "5a1ead28fcdbcb001912fa9f", // UNV DLOC-IRD sight mount
-                  "63fc449f5bd61c6cf3784a88", // Armasight Zeus universal base
-                  "5b3b6dc75acfc47a8773fb1e", // Armasight Vulcan universal base
-                  "67641a851b2899700609901a", // Cyclone Shakhin mount
-                  "6478641c19d732620e045e17"  // SIG Sauer ECHO1 1-2x30mm 30Hz thermal reflex scope
-                ]
-              }
-            ]
-          }
         }
       ]
     },
     "locales": {
       "en": {
-        "name": "Magic Optic Mount",
-        "shortName": "MOM",
-        "description": "Invisble and weightless mount with enough space for optic sight together with thermal or night vision device"
+        "name": "Riser Optic Scopes",
+        "shortName": "Riser OS",
+        "description": "Special riser for optic scopes on Magic Optic Mount"
       }
     },
-    "addtoModSlots": true,
-    "modSlot": [
-      "mod_scope",
-      "mod_scope_000",
-      "mod_scope_001"
-    ],
-    "fleaPriceRoubles": 1,
-    "handbookPriceRoubles": 1,
+    "fleaPriceRoubles": 2900,
+    "handbookPriceRoubles": 2900,
     "inheritParentData": true,
     "inheritExtensionData": true,
     "addtoTraders": true,
     "traders": {
       "MECHANIC": {
-        "6abdaebc1dc9920e7e5566f5": {
+        "6ac1cce61ac3298178c7856d": {
           "barterSettings": {
             "loyalLevel": 1,
             "unlimitedCount": true,
@@ -105,7 +77,7 @@
           },
           "barters": [
             {
-              "count": 1,
+              "count": 2900,
               "_tpl": "MONEY_ROUBLES"
             }
           ]
