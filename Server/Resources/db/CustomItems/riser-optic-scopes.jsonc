@@ -57,7 +57,7 @@
     },
     "locales": {
       "en": {
-        "name": "Riser Optic Scopes",
+        "name": "Riser for Optic Scopes",
         "shortName": "Riser OS",
         "description": "Special riser for optic scopes on Magic Optic Mount"
       }
@@ -71,7 +71,7 @@
       "MECHANIC": {
         "6ac1cce61ac3298178c7856d": {
           "barterSettings": {
-            "loyalLevel": 1,
+            "loyalLevel": 2,
             "unlimitedCount": true,
             "stackObjectsCount": 777
           },

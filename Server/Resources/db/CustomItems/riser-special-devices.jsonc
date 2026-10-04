@@ -31,8 +31,8 @@
     },
     "locales": {
       "en": {
-        "name": "Riser Devices",
-        "shortName": "Riser D",
+        "name": "Riser for Special Devices",
+        "shortName": "Riser SD",
         "description": "Special riser for thermal and night vision devices on Magic Optic Mount"
       }
     },
@@ -45,7 +45,7 @@
       "MECHANIC": {
         "6ac214cdc2a4056ddfefa167": {
           "barterSettings": {
-            "loyalLevel": 1,
+            "loyalLevel": 2,
             "unlimitedCount": true,
             "stackObjectsCount": 777
           },
