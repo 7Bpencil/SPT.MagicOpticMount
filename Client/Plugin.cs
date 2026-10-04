@@ -20,7 +20,6 @@ using FirearmController = EFT.Player.FirearmController;
 using NightVision = BSG.CameraEffects.NightVision;
 
 // TODO add setting to multiply optic zoom by special optic zoom to keep it "realistic"
-// TODO add more precise detection of optics alignment
 
 namespace SevenBoldPencil.MagicOpticMount;
 
@@ -158,8 +157,47 @@ public class Patch_OpticComponentUpdater_CopyComponentFromOptic : ModulePatch
 
 	public static bool AreSightsAligned(Transform opticBone, Transform specialOpticBone, Vector3 weaponForward)
 	{
+		const float maxAngle = 45f;
+		const float maxDistance = 0.006f; // 6mm
+
+		// device is in front of optic
 		var angle = Vector3.Angle(specialOpticBone.position - opticBone.position, weaponForward);
-		return angle < 1;
+		if (angle > maxAngle)
+		{
+			return false;
+		}
+
+		// optic and device view axes are reasonable close
+		var squaredDistance = SqDistPointSegment(opticBone.position, opticBone.position + weaponForward, specialOpticBone.position);
+		if (squaredDistance > maxDistance * maxDistance)
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	public static float SqDistPointSegment(Vector3 a, Vector3 b, Vector3 c)
+	{
+		var ab = b - a;
+		var ac = c - a;
+
+		// Handle cases where c projects outside ab
+		var e = Vector3.Dot(ac, ab);
+		if (e <= 0f)
+		{
+			return Vector3.Dot(ac, ac);
+		}
+
+		var f = Vector3.Dot(ab, ab);
+		if (e >= f)
+		{
+			var bc = c - b;
+			return Vector3.Dot(bc, bc);
+		}
+
+		// Handle cases where c projects onto ab
+		return Vector3.Dot(ac, ac) - e * e / f;
 	}
 
 	// copypaste of OpticComponentUpdater.CopyComponentFromOptic
