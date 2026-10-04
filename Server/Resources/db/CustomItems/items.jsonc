@@ -13,7 +13,7 @@
       "Weight": 0,
       "Slots": [
         {
-          "_name": "mod_scope_000",
+          "_name": "mod_scope",
           "_props": {
             "filters": [
               {
@@ -55,7 +55,7 @@
           }
         },
         {
-          "_name": "mod_scope_001",
+          "_name": "mod_scope_000",
           "_props": {
             "filters": [
               {
