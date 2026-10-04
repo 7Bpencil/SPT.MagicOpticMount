@@ -7,3 +7,4 @@ I know that its janky and unrealistic. Use scope rings of different height to al
 ![](https://raw.githubusercontent.com/7Bpencil/SPT.MagicOpticMount/refs/heads/master/Previews/thermal-razor.png)
 ![](https://raw.githubusercontent.com/7Bpencil/SPT.MagicOpticMount/refs/heads/master/Previews/reap-ir.png)
 ![](https://raw.githubusercontent.com/7Bpencil/SPT.MagicOpticMount/refs/heads/master/Previews/vulcan.png)
+![](https://raw.githubusercontent.com/7Bpencil/SPT.MagicOpticMount/refs/heads/master/Previews/zeus.png)
