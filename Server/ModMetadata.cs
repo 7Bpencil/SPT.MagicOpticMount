@@ -17,7 +17,7 @@ public record ModMetadata : IModMetadata
     public string Name { get; init; } = "7Bpencil.MagicOpticMount";
     public string Author { get; init; } = "7Bpencil";
     public List<string>? Contributors { get; init; } = null;
-    public Version Version { get; init; } = new("0.0.1");
+    public Version Version { get; init; } = new("0.1.0");
     public Range SptVersion { get; init; } = new("~4.1.6");
     public List<string>? Incompatibilities { get; init; } = null;
     public Dictionary<string, Range>? ModDependencies { get; init; } = new()

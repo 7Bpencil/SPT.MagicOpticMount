@@ -24,7 +24,7 @@ using NightVision = BSG.CameraEffects.NightVision;
 
 namespace SevenBoldPencil.MagicOpticMount;
 
-[BepInPlugin("7Bpencil.MagicOpticMount", "7Bpencil.MagicOpticMount", "0.0.1")]
+[BepInPlugin("7Bpencil.MagicOpticMount", "7Bpencil.MagicOpticMount", "0.1.0")]
 public class Plugin : BaseUnityPlugin
 {
     private void Awake()
