@@ -300,6 +300,7 @@ public class Patch_ScopeZoomHandler_UpdateScope : ModulePatch
 		// UpdateScope is a method relative to variable zoom scopes, but shit breaks
 		// and for some reason it gets called even when _adjustableOpticData is null,
 		// I guess game doesnt like when theres two optic scopes on the gun
+		// TODO: issue still happens, somewhere in EFT.CameraControl.CameraManager.method_10, dnSpy cannot breakpoint on the exact place...
 		return ____adjustableOpticData != null;
 	}
 }
