@@ -29,15 +29,11 @@
     <Reference Include="WTT-ServerCommonLib" />
   </ItemGroup>
 
-  <Target Name="CopyToSPT" AfterTargets="AfterBuild">
-    <Exec Command="mkdir &quot;$(OutPath)&quot;" ContinueOnError="true" />
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(OutPath)" />
+  <Target Name="CopyBundlesToSPT" AfterTargets="AfterBuild">
     <Exec Command="xcopy /hievry &quot;$(ProjectDir)Resources&quot; &quot;$(OutPath)&quot;" />
   </Target>
 
-  <Target Name="CopyToStage" AfterTargets="AfterBuild" Condition="'$(Configuration)'=='Release'">
-    <Exec Command="mkdir &quot;$(StagePath)&quot;" ContinueOnError="true" />
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(StagePath)" />
+  <Target Name="CopyBundlesToStage" AfterTargets="AfterBuild" Condition="'$(Configuration)'=='Release'">
     <Exec Command="xcopy /hievry &quot;$(ProjectDir)Resources&quot; &quot;$(StagePath)&quot;" />
   </Target>
 
